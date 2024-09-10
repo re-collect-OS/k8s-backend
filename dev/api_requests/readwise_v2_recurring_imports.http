@@ -1,0 +1,87 @@
+#### Variables
+
+@base_url = http://localhost:8000/v2/recurring-imports/readwise-v2
+# Obtain with `poetry get-bearer-token` (for dev@re-collect.ai default account)
+# or `poetry get-bearer-token <email> <password>` (for other accounts)
+@bearer_token = <replace-me>
+@record_id = <replace-with-record-id>
+@readwise_api_token = <replace-with-valid-api-token>
+
+#### Requests
+
+### Create Readwise v2 recurring import
+POST {{base_url}} HTTP/1.1
+# Get a token with poetry get-bearer-token <email> <password>
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "account_id": "default",
+  "access_token": "{{readwise_api_token}}"
+}
+
+
+### List Readwise v2 recurring imports
+GET {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Read Readwise v2 recurring import status
+# Get a token with poetry get-bearer-token <email> <password>
+# Grab the record id from the create request response above.
+GET {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Bad update to Readwise v2 recurring import request
+# Request is expected to fail since account_id is an immutable property of
+# Readwise v2 recurring import.
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "account_id": "not-default",
+  "access_token": "abc123",
+}
+
+### Update Readwise v2 recurring import request
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": false,
+  "account_id": "default",
+  "access_token": "abc123",
+}
+
+
+### Patch Readwise v2 recurring import
+PATCH {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+}
+
+
+### Trigger a recurring import run
+POST {{base_url}}/{{record_id}}/run HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{}
+
+
+### Delete Readwise v2 recurring import
+DELETE {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Delete all Readwise v2 recurring imports
+DELETE {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}

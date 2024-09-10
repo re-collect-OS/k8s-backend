@@ -1,0 +1,18 @@
+# Only edit this file when adding new feature flags necessary to run any of the
+# apps locally. This file is just a template for the gitignored flag-values.yaml
+# file at the root of the project that is used to evaluate local feature flags.
+
+flagValues:
+  # When set to true, http API returns 503 and workers skip their work loops.
+  killswitch.maintenance-mode: false
+  # Whether RSS recurring imports should be switched to read-only mode
+  # (i.e. don't allow creation of new imports or modification of existing
+  # imports, skip configured import runs, etc.) Records can still be read,
+  # but all codepaths that lead to modification are disabled.
+  killswitch.readonly-rss-imports: false
+  # Whether Readwise v2 recurring imports should be switched to read-only mode.
+  killswitch.readonly-readwise-v2-imports: false
+  # Whether Readwise v3 recurring imports should be switched to read-only mode.
+  killswitch.readonly-readwise-v3-imports: false
+  # Whether Twitter recurring imports should be switched to read-only mode.
+  killswitch.readonly-twitter-imports: false

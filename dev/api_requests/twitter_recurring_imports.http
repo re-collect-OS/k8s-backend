@@ -1,0 +1,98 @@
+#### Variables
+
+@base_url = http://localhost:8000/v2/recurring-imports/twitter
+# Obtain with `poetry get-bearer-token` (for dev@re-collect.ai default account)
+# or `poetry get-bearer-token <email> <password>` (for other accounts)
+@bearer_token = <replace-me>
+@record_id = <replace-with-record-id>
+@settings_code = <replace-me>
+@settings_code_verifier = <replace-me>
+@settings_redirect_uri = http://127.0.0.1:8000/callback
+
+#### Requests
+
+### Create Twitter recurring import
+POST {{base_url}} HTTP/1.1
+# Get a token with poetry get-bearer-token <email> <password>
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "oauth2_params": {
+    "code": "{{settings_code}}",
+    "code_verifier": "{{settings_code_verifier}}",
+    "redirect_uri": "{{settings_redirect_uri}}"
+  }
+}
+
+
+### List Twitter recurring imports
+GET {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Read Twitter recurring import status
+# Get a token with poetry get-bearer-token <email> <password>
+# Grab the record id from the create request response above.
+GET {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Bad update to Twitter recurring import request
+# Request is expected to fail since user_id cannot be specified.
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "user_id": "1234",
+  "oauth2_params": {
+    "code": "123",
+    "code_verifier": "456",
+    "redirect_uri": "{{settings_redirect_uri}}"
+  }
+}
+
+### Update Twitter recurring import request
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": false,
+  "oauth2_params": {
+    "code": "{{settings_code}}",
+    "code_verifier": "{{settings_code_verifier}}",
+    "redirect_uri": "{{settings_redirect_uri}}"
+  }
+}
+
+
+### Patch Twitter recurring import
+PATCH {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+}
+
+
+### Trigger a recurring import run
+POST {{base_url}}/{{record_id}}/run HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{}
+
+
+### Delete Twitter recurring import
+DELETE {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Delete all Twitter recurring imports
+DELETE {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}

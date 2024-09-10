@@ -1,0 +1,87 @@
+#### Variables
+
+@base_url = http://localhost:8000/v2/recurring-imports/rss
+# Obtain with `poetry get-bearer-token` (for dev@re-collect.ai default account)
+# or `poetry get-bearer-token <email> <password>` (for other accounts)
+@bearer_token = <replace-with-result-of-poetry-get-bearer-token>
+@record_id = <replace-with-record-id>
+
+
+#### Requests
+
+### Create RSS Feed recurring import
+POST {{base_url}} HTTP/1.1
+# Get a token with poetry get-bearer-token <email> <password>
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "url": "https://www.abc.net.au/news/feed/51120/rss.xml",
+  "import_content_links": false
+}
+
+
+### List RSS Feed recurring imports
+GET {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Read RSS Feed recurring import status
+# Get a token with poetry get-bearer-token <email> <password>
+# Grab the record id from the create request response above.
+GET {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Bad update RSS Feed recurring import request
+# Request is expected to fail, since url is an immutable property of RSS Feed recurring import.
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": false,
+  "url": "https://rss.cnn.com/rss/cnn_topstories.rss",
+  "import_content_links": true
+}
+
+### Update RSS Feed recurring import request
+PUT {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": false,
+  "url": "https://www.abc.net.au/news/feed/51120/rss.xml",
+  "import_content_links": true
+}
+
+
+### Patch RSS Feed recurring import
+PATCH {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "import_content_links": false
+}
+
+
+### Trigger a recurring import run
+POST {{base_url}}/{{record_id}}/run HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+Content-Type: application/json
+
+{}
+
+
+### Delete RSS Feed recurring import
+DELETE {{base_url}}/{{record_id}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
+
+
+### Delete all RSS Feed recurring imports
+DELETE {{base_url}} HTTP/1.1
+Authorization: Bearer {{bearer_token}}
