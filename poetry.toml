@@ -1,0 +1,6 @@
+# Poetry-specific configuration file for this project.
+[virtualenvs]
+in-project = true
+
+[installer]
+max-workers = 10

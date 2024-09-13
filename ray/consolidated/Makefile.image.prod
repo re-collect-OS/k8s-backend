@@ -1,0 +1,13 @@
+ecr-login:
+	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin foo.us-east-1.amazonaws.com
+
+ray-build:
+	docker build -t recollect-ray-gpu -f Dockerfile .
+
+ray-tag:
+	docker tag recollect-ray-gpu foo.us-east-1.amazonaws.com/recollect-ray-gpu:latest
+
+ray-push:
+	docker push foo.us-east-1.amazonaws.com/recollect-ray-gpu:latest
+
+image: ecr-login ray-build ray-tag ray-push

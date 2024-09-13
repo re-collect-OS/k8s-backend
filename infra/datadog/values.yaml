@@ -1,0 +1,57 @@
+# Datadog Agent configuration
+#
+# Reference:
+# - https://github.com/DataDog/helm-charts/blob/main/charts/datadog/values.yaml
+# - https://docs.datadoghq.com/containers/kubernetes/installation/?tab=helm
+
+registry: public.ecr.aws/datadog
+targetSystem: linux
+datadog:
+  # `apiKey` is set in agent.py on deployment
+  site: us5.datadoghq.com
+
+  apm:
+    # Send traces over TCP:8126 instead of Unix socket
+    socketEnabled: false
+    portEnabled: true
+
+  dogstatsd:
+    # Send metrics over UDP:8125 instead of unix socket
+    useSocketVolume: false
+    useHostPort: true
+
+  logs:
+    enabled: true
+    containerCollectAll: true
+    # https://docs.datadoghq.com/agent/logs/advanced_log_collection/?tab=configurationfile#automatic-multi-line-aggregation
+    autoMultiLineDetection: true
+
+  # List of containers to exclude from DD logs collection.
+  # Add anything that is noisy or not useful to debug *app* problems.
+  containerExcludeLogs: >
+    kube_namespace:^nvidia-gpu-operator$
+    kube_namespace:^aws-load-balancer-controller$
+    kube_namespace:^external-dns$
+    kube_namespace:^kube-system$
+    name:^kuberay-operator$
+
+clusterAgent:
+  admissionController:
+    enabled: true
+    configMode: service
+    # Only mutate pods that have label `admission.datadoghq.com/enabled: "true"`
+    # i.e. only mutate pods for our apps, not other/system pods.
+    mutateUnlabelled: false
+    # Having this policy set to Fail means that if there's something wrong with
+    # the DD agent, new app pods won't be scheduled. This is intentional for the
+    # time being — failing loudly rather than possibly losing metrics. A less
+    # draconian, alternative option is to create alarms that trigger on absence
+    # of DD metrics.
+    #
+    # When setting this policy to Fail, DD recommends setting up the agent in
+    # high-availability mode, meaning:
+    # - clusterAgent.replicas: 2
+    # - clusterAgent.admissionController.createPodDisruptionBudget: true
+    failurePolicy: Fail
+    createPodDisruptionBudget: true
+  replicas: 2

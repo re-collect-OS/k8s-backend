@@ -1,0 +1,7 @@
+delete:
+	kubectl delete --ignore-not-found=true -f cluster_config.dev.yaml --context recollect-dev
+
+deploy:
+	kubectl apply -f cluster_config.dev.yaml --context recollect-dev
+
+ray-dev: delete deploy

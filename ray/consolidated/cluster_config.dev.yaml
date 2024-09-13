@@ -1,0 +1,163 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: recollect
+  namespace: ray
+spec:
+  serviceUnhealthySecondThreshold: 360 # Config for the health check threshold for service. Default value is 60.
+  deploymentUnhealthySecondThreshold: 360  # Config for the health check threshold for deployments. Default value is 60.
+  # serveConfigV2 takes a yaml multi-line scalar, which should be a Ray Serve multi-application config. See https://docs.ray.io/en/latest/serve/multi-app.html.
+  # Only one of serveConfig and serveConfigV2 should be used.
+  serveConfigV2: |
+    applications:
+      - name: summarize
+        import_path: summarize.app
+        route_prefix: /summarize
+        deployments:
+          - name: Summarizer
+            num_replicas: 1
+            ray_actor_options:
+              num_cpus: 0.25
+
+  rayClusterConfig:
+    rayVersion: "2.9.2"
+
+    headGroupSpec:
+      # The `rayStartParams` are used to configure the `ray start` command.
+      # See https://github.com/ray-project/kuberay/blob/master/docs/guidance/rayStartParams.md for the default settings of `rayStartParams` in KubeRay.
+      # See https://docs.ray.io/en/latest/cluster/cli.html#ray-start for all available options in `rayStartParams`.
+      rayStartParams:
+        dashboard-host: '0.0.0.0'
+      #pod template
+      template:
+        spec:
+          nodeSelector:
+            ray: "true"
+          tolerations:
+            - effect: NoSchedule
+              key: dedicated
+              operator: Equal
+              value: ray
+          containers:
+            - name: ray-head
+              image: foo.us-west-2.amazonaws.com/recollect-ray-gpu:latest
+              # Optimal resource allocation will depend on your Kubernetes infrastructure and might
+              # require some experimentation.
+              # Setting requests=limits is recommended with Ray. K8s limits are used for Ray-internal
+              # resource accounting. K8s requests are not used by Ray.
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 3Gi
+                requests:
+                  cpu: 1
+                  memory: 3Gi
+              env:
+                - name: LLM_PROVIDER
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ray-config
+                      key: LLM_PROVIDER
+                - name: FIREWORKS_ENDPOINTS_CLOUD_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: ray-config
+                      key: FIREWORKS_ENDPOINTS_CLOUD_URL
+                - name: FIREWORKS_ENDPOINTS_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ray-secrets
+                      key: FIREWORKS_ENDPOINTS_API_KEY
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: ray-secrets
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: ray-secrets
+                      key: AWS_SECRET_ACCESS_KEY
+              ports:
+                - containerPort: 6379
+                  name: gcs
+                - containerPort: 8265
+                  name: dashboard
+                - containerPort: 10001
+                  name: client
+                - containerPort: 8000
+                  name: serve
+    workerGroupSpecs:
+      # the pod replicas in this group typed worker
+      - replicas: 1
+        minReplicas: 1
+        maxReplicas: 1
+        # logical group name, for this called large-group, also can be functional
+        groupName: ray-gpu-group
+        # If worker pods need to be added, we can increment the replicas.
+        # If worker pods need to be removed, we decrement the replicas, and populate the workersToDelete list.
+        # The operator will remove pods from the list until the desired number of replicas is satisfied.
+        # If the difference between the current replica count and the desired replicas is greater than the
+        # number of entries in workersToDelete, random worker pods will be deleted.
+        #scaleStrategy:
+        #  workersToDelete:
+        #  - raycluster-complete-worker-large-group-bdtwh
+        #  - raycluster-complete-worker-large-group-hv457
+        #  - raycluster-complete-worker-large-group-k8tj7
+        # the following params are used to complete the ray start: ray start --block ...
+        rayStartParams: {}
+        #pod template
+        template:
+          spec:
+            nodeSelector:
+              beta.kubernetes.io/instance-type: g4dn.xlarge
+            tolerations:
+              - effect: NoSchedule
+                key: dedicated
+                operator: Equal
+                value: gpu-enabled
+              - effect: NoSchedule
+                key: nvidia.com/gpu
+                operator: Exists
+            containers:
+              - name: ray-gpu-worker
+                image: foo.us-west-2.amazonaws.com/recollect-ray-gpu:latest
+                lifecycle:
+                  preStop:
+                    exec:
+                      command: ["/bin/sh","-c","ray stop"]
+                env:
+                  - name: LLM_PROVIDER
+                    valueFrom:
+                      configMapKeyRef:
+                        name: ray-config
+                        key: LLM_PROVIDER
+                  - name: FIREWORKS_ENDPOINTS_CLOUD_URL
+                    valueFrom:
+                      configMapKeyRef:
+                        name: ray-config
+                        key: FIREWORKS_ENDPOINTS_CLOUD_URL
+                  - name: FIREWORKS_ENDPOINTS_API_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: ray-secrets
+                        key: FIREWORKS_ENDPOINTS_API_KEY
+                  - name: AWS_ACCESS_KEY_ID
+                    valueFrom:
+                      secretKeyRef:
+                        name: ray-secrets
+                        key: AWS_ACCESS_KEY_ID
+                  - name: AWS_SECRET_ACCESS_KEY
+                    valueFrom:
+                      secretKeyRef:
+                        name: ray-secrets
+                        key: AWS_SECRET_ACCESS_KEY
+                resources:
+                  limits:
+                    nvidia.com/gpu: 1
+                    cpu: 3
+                    memory: 14Gi
+                  requests:
+                    nvidia.com/gpu: 1
+                    cpu: 3
+                    memory: 14Gi

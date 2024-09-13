@@ -1,0 +1,96 @@
+config:
+  aws:defaultTags:
+    tags:
+      env: dev
+  aws:region: us-west-2
+  k8s-backend:allow-admin:
+    - "foo"
+  k8s-backend:allow-origins:
+    - http://localhost:3000
+  k8s-backend:anyscale-endpoints-api-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:anyscale-endpoints-cloud-url: https://api.endpoints.anyscale.com/v1/chat/completions
+  k8s-backend:audio-transcriber-url: http://foo.ray.svc.cluster.local:8000/audio-transcribe/
+  k8s-backend:aurora-rds-owner-id: "123"
+  k8s-backend:aurora-rds-region: us-east-1
+  k8s-backend:aurora-rds-vpc-id: vpc-foo
+  k8s-backend:aurora-routetable-id: rtb-bar
+  k8s-backend:aurora-securitygroup-id: sg-baz
+  k8s-backend:aurora-vpc-network-cidr: 10.0.0.0/16
+  k8s-backend:availability-zones:
+    - us-west-2a
+    - us-west-2b
+  k8s-backend:aws-access-key-id:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:aws-secret-access-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:certificate-arn: arn:aws:acm:us-west-2:bar
+  k8s-backend:cognito-app-client-id: foo
+  k8s-backend:cognito-region: us-west-2
+  k8s-backend:cognito-userpool-id: foo
+  k8s-backend:cognito-userpool-name: bar
+  k8s-backend:datadog-api-key:
+    secure: baz # pragma: allowlist secret
+  k8s-backend:default-embedding-engine: foo
+  k8s-backend:devdb-enabled: "true"
+  k8s-backend:domain: example.domain
+  k8s-backend:eks-cluster-desired-nodes: "2"
+  k8s-backend:eks-cluster-max-nodes: "3"
+  k8s-backend:eks-cluster-min-nodes: "2"
+  k8s-backend:eks-cluster-node-instance-type: t3.medium # Absolute minimum required to run worker nodes.
+  k8s-backend:fireworks-endpoints-api-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:fireworks-endpoints-cloud-url: https://api.fireworks.ai/inference/v1/chat/completions
+  k8s-backend:google-drive-scopes:
+    - https://www.googleapis.com/auth/userinfo.profile
+    - https://www.googleapis.com/auth/userinfo.email
+  k8s-backend:google-oauth2-client-id: foo # pragma: allowlist secret
+  k8s-backend:google-oauth2-client-secret:
+    secure: bar # pragma: allowlist secret
+  k8s-backend:gpu-node-instance-type: g4dn.xlarge
+  k8s-backend:launchdarkly-sdk-key:
+    secure: baz # pragma: allowlist secret
+  k8s-backend:llm-gpu-node-instance-type: g4dn.xlarge
+  k8s-backend:llm-provider: fireworks
+  k8s-backend:neo4j-cloud-password:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:neo4j-cloud-rw-api-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:neo4j-cloud-url: neo4j+s://foo.databases.neo4j.io
+  k8s-backend:neo4j-cloud-user:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:neo4j-graphenedb-password:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:neo4j-graphenedb-url: neo4j+s://foo.graphenedb.com:24786
+  k8s-backend:neo4j-graphenedb-user: neo4j
+  k8s-backend:paragraph-embed-url: http://foo
+  k8s-backend:paragraph-xenc-url: http://foo
+  k8s-backend:postgresql-db: bar
+  k8s-backend:postgresql-host: foo.us-west-2.rds.amazonaws.com
+  k8s-backend:postgresql-password:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:postgresql-port: "5432"
+  k8s-backend:postgresql-user:
+    secure: bar # pragma: allowlist secret
+  k8s-backend:private-subnet-cidrs:
+    - 10.2.96.0/19
+    - 10.2.128.0/19
+  k8s-backend:public-subnet-cidrs:
+    - 10.2.0.0/19
+    - 10.2.32.0/19
+  k8s-backend:ray-head-instance-type: m5.xlarge
+  k8s-backend:sendgrid-api-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:sendgrid-asm-group-id:
+    secure: bar # pragma: allowlist secret
+  k8s-backend:twitter-app-auth-bearer-token:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:twitter-app-auth-consumer-key:
+    secure: foo # pragma: allowlist secret
+  k8s-backend:twitter-app-auth-consumer-secret:
+    secure: bar # pragma: allowlist secret
+  k8s-backend:twitter-user-auth-client-id: baz # pragma: allowlist secret
+  k8s-backend:user-files-bucket: foo-bucket
+  k8s-backend:vpc-network-cidr: 10.2.0.0/16
+  k8s-backend:weaviate-instance-type: r6a.large
+  kubernetes:enableServerSideApply: "true"

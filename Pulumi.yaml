@@ -1,0 +1,9 @@
+name: k8s-backend
+runtime:
+  name: python
+  options:
+    virtualenv: .venv
+description: A Python program to deploy a Kubernetes cluster on AWS
+stackConfigDir: infra
+backend:
+  url: https://api.pulumi.com

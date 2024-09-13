@@ -1,0 +1,7 @@
+delete:
+	kubectl delete --ignore-not-found=true -f cluster_config.prod.yaml --context recollect-prod
+
+deploy:
+	kubectl apply -f cluster_config.prod.yaml --context recollect-prod
+
+ray-prod: delete deploy

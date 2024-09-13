@@ -1,0 +1,22 @@
+# 1. Start by ignoring everything
+*
+
+# 2. Explicitly add files & folders to copy
+!/src
+!/poetry.lock
+!/poetry.toml
+!/pyproject.toml
+!/infra/http_servers/start.sh
+
+# 3. Add any exclusions within folders defined in previous step
+# Exclude __pycache__ folders
+**/__pycache__
+
+# Exclude everything except the module marker from the workers/ folder to
+# avoid rebuilding http_server images when only code in workers/ changes.
+# The (empty) module marker is required by poetry since 'workers' is
+# declared as a package in pyproject.toml
+
+# TODO added SQS queue enqueue in external API, let's add this for now
+#/src/workers/**/*
+#!/src/workers/__init__.py

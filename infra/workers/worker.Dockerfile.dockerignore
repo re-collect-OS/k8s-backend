@@ -1,0 +1,20 @@
+# 1. Start by ignoring everything
+*
+
+# 2. Explicitly add files & folders to copy
+!/src
+!/poetry.lock
+!/poetry.toml
+!/pyproject.toml
+!/infra/workers/start.sh
+
+# 3. Add any exclusions within folders defined in previous step
+# Exclude __pycache__ folders
+**/__pycache__
+
+# Exclude everything except the module marker from the http_servers/ folder to
+# avoid rebuilding worker images when only code in http_servers/ changes.
+# The (empty) module marker is required by poetry since 'http_servers' is
+# declared as a package in pyproject.toml
+/src/http_servers/**/*
+!/src/http_servers/__init__.py
